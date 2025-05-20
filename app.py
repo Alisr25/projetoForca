@@ -46,5 +46,7 @@ def jogar():
         "palavra": jogo["palavra"] if fim == "perdeu" else None
     })
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Use host='0.0.0.0' para o Render aceitar
+    app.run(host="0.0.0.0", port=5000)
