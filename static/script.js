@@ -32,6 +32,13 @@ async function enviarLetra(letra, botao) {
   }
 }
 
+let erros = 0;
+
+function erro() {
+  erros++;
+  document.getElementById("bonequinho").src = `midia/forca${erros}.png`;
+}
+
 function desativarBotoes() {
   document.querySelectorAll("button").forEach((btn) => (btn.disabled = true));
 }
