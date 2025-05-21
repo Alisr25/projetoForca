@@ -41,4 +41,8 @@ function erro() {
 
 function desativarBotoes() {
   document.querySelectorAll("button").forEach((btn) => (btn.disabled = true));
+  document.getElementById("jogarNovamente").style.display = "inline-block";
 }
+document.getElementById("jogarNovamente").onclick = () => {
+  location.reload();
+};
