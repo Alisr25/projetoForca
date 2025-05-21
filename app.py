@@ -3,7 +3,7 @@ import random
 
 app = Flask(__name__)
 
-palavras = ["python", "flask", "github", "programar"]
+palavras = ["engenheiro", "advogado", "medico", "programador", "professor", "arquiteto", "dentista", "jornalista", "artista", "enfermeiro"]
 jogo = {
     "palavra": "",
     "estado": [],
