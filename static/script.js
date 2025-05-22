@@ -4,6 +4,7 @@ const letrasDiv = document.getElementById("letras");
 alfabeto.forEach((letra) => {
   const btn = document.createElement("button");
   btn.textContent = letra;
+  btn.classList.add("letra");
   btn.onclick = () => enviarLetra(letra, btn);
   letrasDiv.appendChild(btn);
 });
@@ -40,7 +41,7 @@ function erro() {
 }
 
 function desativarBotoes() {
-  document.querySelectorAll("button").forEach((btn) => (btn.disabled = true));
+  document.querySelectorAll(".letra").forEach((btn) => (btn.disabled = true));
   document.getElementById("jogarNovamente").style.display = "inline-block";
 }
 document.getElementById("jogarNovamente").onclick = () => {
