@@ -9,3 +9,11 @@ button {
   padding: 10px;
   font-size: 1rem;
 }
+
+#palavra{
+  font-size: 30px;
+}
+
+#tentativas{
+  font-size: 20px;
+}
