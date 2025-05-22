@@ -8,6 +8,7 @@
   <body>
     <h1>Jogo da Forca</h1>
     <img id="bonequinho" src="{{ url_for('static', filename='midia/forca0.png') }}">
+    <p>Dica: É uma profissão</p>
     <p id="palavra">{{ estado|join(" ") }}</p>
     <p id="tentativas">Tentativas restantes: {{ tentativas }}</p>
     <div id="letras"></div>
@@ -19,3 +20,4 @@
     <script src="/static/script.js"></script>
   </body>
 </html>
+
