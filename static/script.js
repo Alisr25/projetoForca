@@ -27,11 +27,11 @@ async function enviarLetra(letra, botao) {
   document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
 
   if (dados.fim === "ganhou") {
-    document.getElementById("resultado").textContent = "Você ganhou!";
+    document.getElementById("resultado").textContent = " Você ganhou! 🎉🎉🎉";
     desativarBotoes();
   } else if (dados.fim === "perdeu") {
     document.getElementById("resultado").textContent =
-      "Você perdeu! A palavra era: " + dados.palavra;
+      "😢Você perdeu! A palavra era: " + dados.palavra;
     desativarBotoes();
   }
 }
@@ -48,6 +48,5 @@ function desativarBotoes() {
   document.getElementById("jogarNovamente").style.display = "inline-block";
 }
 document.getElementById("jogarNovamente").onclick = () => {
-  window.location.href = "/novo";
+  location.reload();
 };
-
