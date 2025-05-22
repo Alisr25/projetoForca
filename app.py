@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import random
+import os
+
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # segredo para criptografar a sessão
+
 
 palavras = [
     "engenheiro", "advogado", "medico", "programador", "professor",
@@ -15,21 +19,31 @@ jogo = {
 }
 
 def novo_jogo():
-    jogo["palavra"] = random.choice(palavras)
-    jogo["estado"] = ["_"] * len(jogo["palavra"])
-    jogo["tentativas"] = 6
+    palavra = random.choice(palavras)
+    estado = ["_"] * len(palavra)
+    tentativas = 6
+    session["jogo"] = {
+        "palavra": palavra,
+        "estado": estado,
+        "tentativas": tentativas
+    }
+
 
 # Inicia o jogo uma vez quando o servidor sobe
 novo_jogo()
 
 @app.route("/")
 def index():
-    # NÃO reinicia o jogo aqui
+    if "jogo" not in session:
+        novo_jogo()
+    jogo = session["jogo"]
     return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+
 
 @app.route("/jogar", methods=["POST"])
 def jogar():
     letra = request.json["letra"]
+    jogo = session.get("jogo")
     acertou = False
 
     for i, l in enumerate(jogo["palavra"]):
@@ -46,6 +60,8 @@ def jogar():
     elif jogo["tentativas"] == 0:
         fim = "perdeu"
 
+    session["jogo"] = jogo  # atualiza a sessão
+
     return jsonify({
         "estado": jogo["estado"],
         "tentativas": jogo["tentativas"],
@@ -53,10 +69,13 @@ def jogar():
         "palavra": jogo["palavra"] if fim == "perdeu" else None
     })
 
+
 @app.route("/novo")
 def novo():
     novo_jogo()
+    jogo = session["jogo"]
     return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
