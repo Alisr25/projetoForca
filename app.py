@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 palavras = [
     "engenheiro", "advogado", "medico", "programador", "professor",
-    "arquiteto", "dentista", "jornalista", "artista", "enfermeiro"
+    "arquiteto", "dentista", "jornalista", "artista", "enfermeiro", "astronauta", "estudante", "psicologo", "psiquiatra", "veterinario", "faxineiro", "motorista", "zelador", "recepcionista", "cozinheiro", "pedreiro", "engenheiro"
 ]
 
 jogo = {
