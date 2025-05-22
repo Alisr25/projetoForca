@@ -1,72 +1,52 @@
-from flask import Flask, render_template, request, jsonify
-from flask import session 
-import random
+const alfabeto = "abcdefghijklmnopqrstuvwxyz".split("");
+const letrasDiv = document.getElementById("letras");
 
-app = Flask(__name__)
-app.secret_key = "sua_chave_segura"
+alfabeto.forEach((letra) => {
+  const btn = document.createElement("button");
+  btn.textContent = letra;
+  btn.classList.add("letra");
+  btn.onclick = () => enviarLetra(letra, btn);
+  letrasDiv.appendChild(btn);
+});
 
-palavras = [
-    "engenheiro", "advogado", "medico", "programador", "professor",
-    "arquiteto", "dentista", "jornalista", "artista", "enfermeiro", "astronauta", "estudante", "psicologo", "psiquiatra", "veterinario", "faxineiro", "motorista", "zelador", "recepcionista", "cozinheiro", "pedreiro", "engenheiro"
-]
+async function enviarLetra(letra, botao) {
+  botao.disabled = true;
+  const resposta = await fetch("/jogar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ letra }),
+  });
 
-jogo = {
-    "palavra": "",
-    "estado": [],
-    "tentativas": 6
+  const dados = await resposta.json();
+
+  document.getElementById("palavra").textContent = dados.estado.join(" ");
+  document.getElementById("tentativas").textContent =
+    "Tentativas restantes: " + dados.tentativas;
+
+  const erros = 6 - dados.tentativas;
+  document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
+
+  if (dados.fim === "ganhou") {
+    document.getElementById("resultado").textContent = " Você ganhou! 🎉🎉🎉";
+    desativarBotoes();
+  } else if (dados.fim === "perdeu") {
+    document.getElementById("resultado").textContent =
+      "😢Você perdeu! A palavra era: " + dados.palavra;
+    desativarBotoes();
+  }
 }
 
-def novo_jogo():
-    palavra = random.choice(palavras)
-    session["palavra"] = random.choice(palavras)
-    session["estado"] = ["_"] * len(jogo["palavra"])
-    session["tentativas"] = 6
+let erros = 0;
 
+function erro() {
+  erros++;
+  document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
+}
 
-@app.route("/")
-def index():
-    # NÃO reinicia o jogo aqui
-    novo_jogo()
-    return render_template("index.html", estado=session["estado"], tentativas=session["tentativas"])
-
-@app.route("/jogar", methods=["POST"])
-def jogar():
-    letra = request.json["letra"]
-
-    palavra = session.get("palavra")
-    estado = session.get("estado")
-    tentativas = session.get("tentativas")
-    
-    acertou = False
-
-    for i, l in enumerate(jogo["palavra"]):
-        if l == letra:
-            jogo["estado"][i] = letra
-            acertou = True
-
-    if not acertou:
-        jogo["tentativas"] -= 1
-
-    session["estado"] = estado
-    session["tentativas"] = tentativas 
-
-    fim = ""
-    if "_" not in estado:
-        fim = "ganhou"
-    elif tentativas == 0:
-        fim = "perdeu"
-
-    return jsonify({
-        "estado": estado,
-        "tentativas": tentativas,
-        "fim": fim,
-        "palavra": palavra if fim == "perdeu" else None
-    })
-
-@app.route("/novo")
-def novo():
-    novo_jogo()
-    return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+function desativarBotoes() {
+  document.querySelectorAll(".letra").forEach((btn) => (btn.disabled = true));
+  document.getElementById("jogarNovamente").style.display = "inline-block";
+}
+document.getElementById("jogarNovamente").onclick = () => {
+  location.reload();
+};
