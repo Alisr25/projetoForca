@@ -17,8 +17,14 @@ def novo_jogo():
 
 @app.route("/")
 def index():
+    return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+
+@app.route("/novo")
+def novo():
     novo_jogo()
     return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+
+
 
 @app.route("/jogar", methods=["POST"])
 def jogar():
