@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify
+from flask import session 
 import random
 
 app = Flask(__name__)
+app.secret_key = "sua_chave_segura"
 
 palavras = [
     "engenheiro", "advogado", "medico", "programador", "professor",
@@ -15,20 +17,26 @@ jogo = {
 }
 
 def novo_jogo():
-    jogo["palavra"] = random.choice(palavras)
-    jogo["estado"] = ["_"] * len(jogo["palavra"])
-    jogo["tentativas"] = 6
+    palavra = random.choice(palavras)
+    session["palavra"] = random.choice(palavras)
+    session["estado"] = ["_"] * len(jogo["palavra"])
+    session["tentativas"] = 6
 
 
 @app.route("/")
 def index():
     # NÃO reinicia o jogo aqui
     novo_jogo()
-    return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+    return render_template("index.html", estado=session["estado"], tentativas=session["tentativas"])
 
 @app.route("/jogar", methods=["POST"])
 def jogar():
     letra = request.json["letra"]
+
+    palavra = session.get("palavra")
+    estado = session.get("estado")
+    tentativas = session.get("tentativas")
+    
     acertou = False
 
     for i, l in enumerate(jogo["palavra"]):
@@ -39,17 +47,20 @@ def jogar():
     if not acertou:
         jogo["tentativas"] -= 1
 
+    session["estado"] = estado
+    session["tentativas"] = tentativas 
+
     fim = ""
-    if "_" not in jogo["estado"]:
+    if "_" not in estado:
         fim = "ganhou"
-    elif jogo["tentativas"] == 0:
+    elif tentativas == 0:
         fim = "perdeu"
 
     return jsonify({
-        "estado": jogo["estado"],
-        "tentativas": jogo["tentativas"],
+        "estado": estado,
+        "tentativas": tentativas,
         "fim": fim,
-        "palavra": jogo["palavra"] if fim == "perdeu" else None
+        "palavra": palavra if fim == "perdeu" else None
     })
 
 @app.route("/novo")
