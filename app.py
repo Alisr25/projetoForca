@@ -1,52 +1,62 @@
-const alfabeto = "abcdefghijklmnopqrstuvwxyz".split("");
-const letrasDiv = document.getElementById("letras");
+from flask import Flask, render_template, request, jsonify
+import random
 
-alfabeto.forEach((letra) => {
-  const btn = document.createElement("button");
-  btn.textContent = letra;
-  btn.classList.add("letra");
-  btn.onclick = () => enviarLetra(letra, btn);
-  letrasDiv.appendChild(btn);
-});
+app = Flask(__name__)
 
-async function enviarLetra(letra, botao) {
-  botao.disabled = true;
-  const resposta = await fetch("/jogar", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ letra }),
-  });
+palavras = [
+    "engenheiro", "advogado", "medico", "programador", "professor",
+    "arquiteto", "dentista", "jornalista", "artista", "enfermeiro", "astronauta", "estudante", "psicologo", "psiquiatra", "veterinario", "faxineiro", "motorista", "zelador", "recepcionista", "cozinheiro", "pedreiro", "engenheiro"
+]
 
-  const dados = await resposta.json();
-
-  document.getElementById("palavra").textContent = dados.estado.join(" ");
-  document.getElementById("tentativas").textContent =
-    "Tentativas restantes: " + dados.tentativas;
-
-  const erros = 6 - dados.tentativas;
-  document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
-
-  if (dados.fim === "ganhou") {
-    document.getElementById("resultado").textContent = " Você ganhou! 🎉🎉🎉";
-    desativarBotoes();
-  } else if (dados.fim === "perdeu") {
-    document.getElementById("resultado").textContent =
-      "😢Você perdeu! A palavra era: " + dados.palavra;
-    desativarBotoes();
-  }
+jogo = {
+    "palavra": "",
+    "estado": [],
+    "tentativas": 6
 }
 
-let erros = 0;
+def novo_jogo():
+    jogo["palavra"] = random.choice(palavras)
+    jogo["estado"] = ["_"] * len(jogo["palavra"])
+    jogo["tentativas"] = 6
 
-function erro() {
-  erros++;
-  document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
-}
+# Inicia o jogo uma vez quando o servidor sobe
+novo_jogo()
 
-function desativarBotoes() {
-  document.querySelectorAll(".letra").forEach((btn) => (btn.disabled = true));
-  document.getElementById("jogarNovamente").style.display = "inline-block";
-}
-document.getElementById("jogarNovamente").onclick = () => {
-  location.reload();
-};
+@app.route("/")
+def index():
+    # NÃO reinicia o jogo aqui
+    return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+
+@app.route("/jogar", methods=["POST"])
+def jogar():
+    letra = request.json["letra"]
+    acertou = False
+
+    for i, l in enumerate(jogo["palavra"]):
+        if l == letra:
+            jogo["estado"][i] = letra
+            acertou = True
+
+    if not acertou:
+        jogo["tentativas"] -= 1
+
+    fim = ""
+    if "_" not in jogo["estado"]:
+        fim = "ganhou"
+    elif jogo["tentativas"] == 0:
+        fim = "perdeu"
+
+    return jsonify({
+        "estado": jogo["estado"],
+        "tentativas": jogo["tentativas"],
+        "fim": fim,
+        "palavra": jogo["palavra"] if fim == "perdeu" else None
+    })
+
+@app.route("/novo")
+def novo():
+    novo_jogo()
+    return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
