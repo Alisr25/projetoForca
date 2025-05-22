@@ -40,8 +40,10 @@ let erros = 0;
 
 function erro() {
   erros++;
-  document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
+  const novaImagem = `/static/midia/forca${erros}.png?cache=${new Date().getTime()}`;
+  document.getElementById("bonequinho").src = novaImagem;
 }
+
 
 function desativarBotoes() {
   document.querySelectorAll(".letra").forEach((btn) => (btn.disabled = true));
