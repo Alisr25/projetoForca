@@ -19,12 +19,11 @@ def novo_jogo():
     jogo["estado"] = ["_"] * len(jogo["palavra"])
     jogo["tentativas"] = 6
 
-# Inicia o jogo uma vez quando o servidor sobe
-novo_jogo()
 
 @app.route("/")
 def index():
     # NÃO reinicia o jogo aqui
+    novo_jogo()
     return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
 
 @app.route("/jogar", methods=["POST"])
