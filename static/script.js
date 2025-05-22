@@ -40,7 +40,7 @@ let erros = 0;
 
 function erro() {
   erros++;
-  document.getElementById("bonequinho").src = `static/midia/forca${erros}.png`;
+  document.getElementById("bonequinho").src = `/static/midia/forca${erros}.png`;
 }
 
 function desativarBotoes() {
