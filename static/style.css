@@ -18,8 +18,10 @@ h1{
 button {
   margin: 5px;
   padding: 10px;
-  font-size: 1rem;
+  font-size: 25px;
+  border-radius: 5px;
 }
+
 
 #palavra{
   font-size: 30px;
