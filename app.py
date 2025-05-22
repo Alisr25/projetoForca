@@ -3,7 +3,11 @@ import random
 
 app = Flask(__name__)
 
-palavras = ["engenheiro", "advogado", "medico", "programador", "professor", "arquiteto", "dentista", "jornalista", "artista", "enfermeiro"]
+palavras = [
+    "engenheiro", "advogado", "medico", "programador", "professor",
+    "arquiteto", "dentista", "jornalista", "artista", "enfermeiro"
+]
+
 jogo = {
     "palavra": "",
     "estado": [],
@@ -15,9 +19,12 @@ def novo_jogo():
     jogo["estado"] = ["_"] * len(jogo["palavra"])
     jogo["tentativas"] = 6
 
+# Inicia o jogo uma vez quando o servidor sobe
+novo_jogo()
+
 @app.route("/")
 def index():
-    novo_jogo()
+    # NÃO reinicia o jogo aqui
     return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
 
 @app.route("/jogar", methods=["POST"])
@@ -46,7 +53,10 @@ def jogar():
         "palavra": jogo["palavra"] if fim == "perdeu" else None
     })
 
+@app.route("/novo")
+def novo():
+    novo_jogo()
+    return render_template("index.html", estado=jogo["estado"], tentativas=jogo["tentativas"])
 
 if __name__ == "__main__":
-    # Use host='0.0.0.0' para o Render aceitar
     app.run(host="0.0.0.0", port=5000)
