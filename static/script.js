@@ -23,6 +23,9 @@ async function enviarLetra(letra, botao) {
   document.getElementById("tentativas").textContent =
     "Tentativas restantes: " + dados.tentativas;
 
+  const erros = 6 - dados.tentativas;
+  document.getElementById("bonequinho").src = `static/midia/forca${erros}.png`;
+
   if (dados.fim === "ganhou") {
     document.getElementById("resultado").textContent = "Você ganhou!";
     desativarBotoes();
