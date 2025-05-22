@@ -48,6 +48,5 @@ function desativarBotoes() {
   document.getElementById("jogarNovamente").style.display = "inline-block";
 }
 document.getElementById("jogarNovamente").onclick = () => {
-  window.location.href = "/novo";
+  location.reload();
 };
-
